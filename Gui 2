@@ -64,28 +64,30 @@ end
 -- Evidence detection functions
 local function detectEMF(EMF)
     local s = false
-    if EMF then 
+    if EMF and s == false then 
         local L = {}
         for I = 1, 5 do table.insert(L, 'L' .. tostring(I)) end
         local t_s = {}
         for I, V in pairs(L) do
-            local part = EMF:FindFirstChild(V)
-            if typeof(part) == 'Instance' then
-                local c = part.BrickColor ~= BrickColor.new('Smoky grey')
+            L[I] = EMF:FindFirstChild(V)
+            if typeof(L[I]) == 'Instance' then
+                local c = L[I].BrickColor ~= BrickColor.new('Smoky grey')
                 if c and I == 5 then
                     s = true
                     break
                 end
 
                 if not c then 
-                    table.insert(t_s, part.BrickColor)
+                    table.insert(t_s, L[I].BrickColor)
                 end
             end
         end
         s = (s == true) or (#t_s <= 5 and t_s)
-    else
-        -- Skip the emfpart5 check if not found
-        s = false
+    elseif not EMF and s == false then
+        local a = Workspace:FindFirstChild('emfpart5') or Workspace:WaitForChild('emfpart5')
+        if a then
+            s = true
+        end
     end
 
     if s then
@@ -97,10 +99,10 @@ end
 
 local function detectSpiritBox(SB)
     local s = false
-    if SB then
+    if SB and s == false then
         local child = SB:FindFirstChild('Hand') and SB.Hand:GetChildren()
         for _, V in pairs(child) do
-            if V.ClassName == 'Sound' and V.Playing then
+            if V.ClassName == 'Sound' and V.Playing == true then
                 s = true
                 break
             end
@@ -116,21 +118,21 @@ end
 
 local function detectWriting(Book)
     local s = false
-    if Book then
+    if Book and s == false then
         local t = {}
         for I = 1, 2 do table.insert(t, 'Page' .. tostring(I)) end
         for I, V in pairs(t) do
-            local page = Book:FindFirstChild(V)
-            if typeof(page) == 'Instance' then
-                local decal = page:FindFirstChildOfClass('Decal')
-                if decal then
-                    decal:GetPropertyChangedSignal("Transparency"):Connect(function()
-                        if decal.Transparency == 0 then
+            t[I] = Book:FindFirstChild(V)
+            if typeof(t[I]) == 'Instance' then
+                local b = t[I]:FindFirstChildOfClass('Decal')
+                if b then
+                    b:GetPropertyChangedSignal("Transparency"):Connect(function()
+                        if b.Transparency == 0 then
                             s = true
                             addEvidenceToChecklist("Writing")
                         end
                     end)
-                    if decal.Transparency == 0 then
+                    if b.Transparency == 0 then
                         s = true
                         addEvidenceToChecklist("Writing")
                     end
@@ -186,9 +188,12 @@ end
 
 local function detectOrbs()
     local s = false
-    local orb = Workspace:FindFirstChild('Orb')
-    if orb then
-        s = true
+    if s == false then
+        local a = Workspace:FindFirstChild('Orb') or Workspace:WaitForChild('Orb')
+        if a then
+            s = true
+        end
+        wait(.5)
     end
 
     if s then
@@ -200,20 +205,15 @@ end
 
 local function detectFreezingTemps(TM)
     local s = false
-    if TM then
-        local temp = TM:FindFirstChild('Temp')
-        if temp then
-            local surfaceGui = temp:FindFirstChild('SurfaceGui')
-            if surfaceGui then
-                local textLabel = surfaceGui.Frame:FindFirstChild('TextLabel')
-                if textLabel then
-                    local temperature = tonumber(textLabel.Text:match('%d+'))
-                    if temperature and temperature <= 0 then
-                        s = true
-                    end
-                end
-            end
+    if TM and s == false then
+        local a = TM:FindFirstChild('Temp') and (TM.Temp:FindFirstChild('SurfaceGui') and TM.Temp.SurfaceGui.Frame.TextLabel.Text)
+        local b = tonumber(a:match('%d+'))
+        local c = (b <= 0)
+        if c then
+            s = true
         end
+    elseif not TM and s == false then
+        -- Cold breath
     end
 
     if s then
