@@ -1,7 +1,6 @@
 local urls = {
     "https://raw.githubusercontent.com/Shipwuu/Specter/main/Gui%201",
-    "https://raw.githubusercontent.com/Shipwuu/Specter/main/Gui%202",
-    "https://raw.githubusercontent.com/Shipwuu/Specter/main/Gui%203"
+    "https://raw.githubusercontent.com/Shipwuu/Specter/main/Gui%202"
 }
 
 local maxScriptsPerBatch = 10  -- Maximum number of scripts to execute per batch
