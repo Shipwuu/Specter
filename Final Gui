@@ -1,11 +1,7 @@
 local urls = {
-    "https://raw.githubusercontent.com/Shipwuu/Yunicx-UI/main/Button%201",
-    "https://raw.githubusercontent.com/Shipwuu/Yunicx-UI/main/Button%204",
-    "https://raw.githubusercontent.com/Shipwuu/Yunicx-UI/main/Button%203",
-    "https://raw.githubusercontent.com/Shipwuu/Yunicx-UI/main/Button%202",
-    "https://raw.githubusercontent.com/Shipwuu/Yunicx-UI/main/Button%205",
-    "https://raw.githubusercontent.com/Shipwuu/Yunicx-UI/main/Animation",
-    "https://raw.githubusercontent.com/Shipwuu/Yunicx-UI/main/Chat%20SPY"
+    "https://raw.githubusercontent.com/Shipwuu/Specter/main/Gui%201",
+    "https://raw.githubusercontent.com/Shipwuu/Specter/main/Gui%202",
+    "https://raw.githubusercontent.com/Shipwuu/Specter/main/Gui%203"
 }
 
 local maxScriptsPerBatch = 10  -- Maximum number of scripts to execute per batch
