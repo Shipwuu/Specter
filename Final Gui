@@ -44,7 +44,7 @@ local function fetchAndExecuteScripts(urls)
         else
             warn("Failed to fetch script from URL: " .. url .. " after " .. maxRetries .. " retries ❌")
         end
-        wait(0.5)  -- Ensure a brief wait between executions
+        wait(2)  -- Wait for 2 seconds before executing the next script
     end
 end
 
