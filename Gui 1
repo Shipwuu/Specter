@@ -1,1 +1,606 @@
-t
+local a = loadstring(game:HttpGet("https://raw.githubusercontent.com/DashaBars/Hack/main/Gui"))()
+
+-- Services
+local CoreGui = game:GetService("CoreGui")
+local Workspace = game:GetService("Workspace")
+local Players = game:GetService("Players")
+local Lighting = game:GetService("Lighting")
+local RunService = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local StarterGui = game:GetService("StarterGui")
+
+local LocalPlayer = Players.LocalPlayer
+local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
+
+-- Protect GUI
+if not pcall(function() return syn.protect_gui end) then
+    syn = {}
+    syn.protect_gui = function(gui) gui.Parent = CoreGui end
+end
+
+-- Setup
+Workspace.FallenPartsDestroyHeight = -50000
+Lighting.Brightness = 2
+Lighting.GlobalShadows = false
+Lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
+Lighting.Ambient = Color3.fromRGB(128, 128, 128)
+Lighting.FogEnd = 100000
+
+for _, descendant in pairs(Lighting:GetDescendants()) do
+    if descendant:IsA("Atmosphere") then
+        descendant:Destroy()
+    end
+end
+
+-- Create GUI for Sanity Check
+local sanityGui = Instance.new("ScreenGui")
+local sanityLabel = Instance.new("TextLabel")
+local teleportButton = Instance.new("TextButton")
+local teleportToBoneButton = Instance.new("TextButton")
+local startButton = Instance.new("TextButton")
+
+sanityGui.Name = "SanityCheckGui"
+sanityGui.Parent = CoreGui
+
+sanityLabel.Name = "SanityLabel"
+sanityLabel.Parent = sanityGui
+sanityLabel.BackgroundTransparency = 0.5
+sanityLabel.Position = UDim2.new(1, -500, 0, 10)
+sanityLabel.Size = UDim2.new(0, 140, 0, 30)
+sanityLabel.Font = Enum.Font.SourceSansBold
+sanityLabel.TextSize = 20
+sanityLabel.TextColor3 = Color3.fromRGB(70, 130, 180)
+sanityLabel.TextStrokeTransparency = 0
+sanityLabel.Text = "Sanity: Loading..."
+
+teleportButton.Name = "TeleportButton"
+teleportButton.Parent = sanityGui
+teleportButton.AnchorPoint = Vector2.new(1, 0)
+teleportButton.Position = UDim2.new(1, -150, 0, 50)
+teleportButton.Size = UDim2.new(0, 140, 0, 30)
+teleportButton.Font = Enum.Font.SourceSansBold
+teleportButton.TextSize = 18
+teleportButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+teleportButton.BackgroundColor3 = Color3.fromRGB(0, 128, 255)
+teleportButton.BackgroundTransparency = 0.7
+teleportButton.TextStrokeTransparency = 0
+teleportButton.Text = "To Van"
+teleportButton.MouseButton1Click:Connect(function()
+    HumanoidRootPart.CFrame = Workspace.Van.Spawn.CFrame + Vector3.new(0, 3, 0)
+end)
+
+teleportToBoneButton.Name = "TeleportToBoneButton"
+teleportToBoneButton.Parent = sanityGui
+teleportToBoneButton.AnchorPoint = Vector2.new(1, 0)
+teleportToBoneButton.Position = UDim2.new(1, -150, 0, 10)  -- Adjust Y position as needed
+teleportToBoneButton.Size = UDim2.new(0, 140, 0, 30)
+teleportToBoneButton.Font = Enum.Font.SourceSansBold
+teleportToBoneButton.TextSize = 18
+teleportToBoneButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+teleportToBoneButton.BackgroundColor3 = Color3.fromRGB(0, 128, 255)
+teleportToBoneButton.BackgroundTransparency = 0.7  -- Set transparency here
+teleportToBoneButton.TextStrokeTransparency = 0
+teleportToBoneButton.Text = "Extra Evi"
+teleportToBoneButton.MouseButton1Click:Connect(function()
+   loadstring(game:HttpGet("https://raw.githubusercontent.com/Shipwuu/By-Me/main/Find%20Extra%20Evidence"))()
+end)
+
+local startButton = Instance.new("TextButton")
+startButton.Name = "StartButton"
+startButton.Parent = sanityGui  -- Assuming sanityGui is the parent GUI element
+startButton.AnchorPoint = Vector2.new(0, 0.5)
+startButton.Position = UDim2.new(1, -289, 0, 104)  -- Adjust X and Y positions as needed
+startButton.Size = UDim2.new(0, 140, 0, 30)
+startButton.Font = Enum.Font.SourceSansBold
+startButton.TextSize = 18
+startButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+startButton.BackgroundColor3 = Color3.fromRGB(0, 128, 255)
+startButton.BackgroundTransparency = 0.7  -- Adjust transparency as desired
+startButton.TextStrokeTransparency = 0
+startButton.Text = "Start"
+
+-- Function to fire the "Start" server event
+startButton.MouseButton1Click:Connect(function()
+    game:GetService("ReplicatedStorage"):WaitForChild("Start"):FireServer()
+end)
+
+RunService.RenderStepped:Connect(function()
+    local sanity = LocalPlayer.Data:FindFirstChild("Sanity")
+    if sanity then
+        sanityLabel.Text = "Sanity: " .. tostring(math.floor(sanity.Value))
+    end
+end)
+
+-- Functions and buttons
+local function createBillboardGui(adornedPart, text, color)
+    local billboardGui = Instance.new("BillboardGui")
+    local textLabel = Instance.new("TextLabel")
+
+    billboardGui.Adornee = adornedPart
+    billboardGui.Size = UDim2.new(0, 100, 0, 150)
+    billboardGui.StudsOffset = Vector3.new(0, 1, 0)
+    billboardGui.AlwaysOnTop = true
+
+    textLabel.Parent = billboardGui
+    textLabel.BackgroundTransparency = 1
+    textLabel.Position = UDim2.new(0, 0, 0, -50)
+    textLabel.Size = UDim2.new(0, 100, 0, 100)
+    textLabel.Font = Enum.Font.SourceSansSemibold
+    textLabel.TextSize = 14
+    textLabel.TextColor3 = color
+    textLabel.TextStrokeTransparency = 0
+    textLabel.TextYAlignment = Enum.TextYAlignment.Bottom
+    textLabel.Text = text
+    textLabel.ZIndex = 10
+
+    return billboardGui
+end
+
+local function addBillboardGuiToPart(name, text, color)
+    for _, part in pairs(Workspace:GetChildren()) do
+        if part.Name == name then
+            local billboardGui = createBillboardGui(part, text, color)
+            billboardGui.Parent = part
+        end
+    end
+
+    Workspace.ChildAdded:Connect(function(child)
+        if child.Name == name then
+            local billboardGui = createBillboardGui(child, text, color)
+            billboardGui.Parent = child
+        end
+    end)
+end
+
+-- Adding the specified billboard
+addBillboardGuiToPart("emfpart2", "Emf2", Color3.fromRGB(0, 0, 255))
+
+-- Existing billboard additions
+addBillboardGuiToPart("Orb", "Orb", Color3.fromRGB(30, 144, 255))
+addBillboardGuiToPart("emfpart5", "Emf5", Color3.fromRGB(255, 0, 0))
+addBillboardGuiToPart("emfpart3", "Emf3", Color3.fromRGB(100, 140, 0))
+addBillboardGuiToPart("emfpart4", "Emf4", Color3.fromRGB(100, 69, 0))
+
+for _, ghost in pairs(Workspace:GetChildren()) do
+    if ghost.Name == "GhostModel" and ghost:FindFirstChild("Humanoid") then
+        local boxAdornment = Instance.new("BoxHandleAdornment")
+        boxAdornment.Adornee = ghost.HumanoidRootPart
+        boxAdornment.AlwaysOnTop = true
+        boxAdornment.Color3 = Color3.fromRGB(255, 0, 0)
+        boxAdornment.Size = Vector3.new(2, 2, 1)
+        boxAdornment.Transparency = 0.5
+        boxAdornment.ZIndex = 2
+        boxAdornment.Parent = ghost
+        boxAdornment.Name = "ESP"
+
+        local ghostGui = createBillboardGui(ghost.HumanoidRootPart, "Ghost Name: " .. Workspace:FindFirstChild("Van").Objectives.SurfaceGui.Frame.Objectives.GhostInfo.Text:split("is ")[2]:match(">(.+)<"), Color3.new(1, 1, 1))
+        ghostGui.Parent = ghost
+    end
+end
+
+for I, y in pairs(workspace.House:GetChildren()) do
+    if y.Name == "Bone" then
+        if y:FindFirstChild("BoneModel") then
+            local p = Instance.new("BillboardGui")
+            local q = Instance.new("TextLabel")
+            p.Adornee = y
+            p.Name = "Bone"
+            p.Parent = y
+            p.Size = UDim2.new(0, 100, 0, 150)
+            p.StudsOffset = Vector3.new(0, 1, 0)
+            p.AlwaysOnTop = true
+            q.Parent = p
+            q.BackgroundTransparency = 1
+            q.Position = UDim2.new(0, 0, 0, -50)
+            q.Size = UDim2.new(0, 100, 0, 100)
+            q.Font = Enum.Font.SourceSansSemibold
+            q.TextSize = 14
+            q.TextColor3 = Color3.fromRGB(230, 230, 250)
+            q.TextStrokeTransparency = 0
+            q.TextYAlignment = Enum.TextYAlignment.Bottom
+            q.Text = "Bone"
+            q.ZIndex = 10
+        end
+    end
+end
+
+for B, J in pairs(workspace.House.Outside.Doors:GetChildren()) do
+    if J.Name == "Door" then
+        if J:FindFirstChild("Door") then
+            local p = Instance.new("BillboardGui")
+            local q = Instance.new("TextLabel")
+            p.Adornee = J
+            p.Name = "Exit"
+            p.Parent = J
+            p.Size = UDim2.new(0, 100, 0, 150)
+            p.StudsOffset = Vector3.new(0, 1, 0)
+            p.AlwaysOnTop = true
+            q.Parent = p
+            q.BackgroundTransparency = 1
+            q.Position = UDim2.new(0, 0, 0, -50)
+            q.Size = UDim2.new(0, 100, 0, 100)
+            q.Font = Enum.Font.SourceSansSemibold
+            q.TextSize = 14
+            q.TextColor3 = Color3.fromRGB(0, 128, 0)
+            q.TextStrokeTransparency = 0
+            q.TextYAlignment = Enum.TextYAlignment.Bottom
+            q.Text = "Exit"
+            q.ZIndex = 10
+        end
+    end
+end
+
+for y, H in pairs(workspace.Van:GetChildren()) do
+    if H.Name == "Spawn" then
+        local p = Instance.new("BillboardGui")
+        local q = Instance.new("TextLabel")
+        p.Adornee = H
+        p.Name = "Van"
+        p.Parent = H
+        p.Size = UDim2.new(0, 100, 0, 150)
+        p.StudsOffset = Vector3.new(0, 1, 0)
+        p.AlwaysOnTop = true
+        q.Parent = p
+        q.BackgroundTransparency = 1
+        q.Position = UDim2.new(0, 0, 0, -50)
+        q.Size = UDim2.new(0, 100, 0, 100)
+        q.Font = Enum.Font.SourceSansSemibold
+        q.TextSize = 14
+        q.TextColor3 = Color3.fromRGB(255, 0, 255)
+        q.TextStrokeTransparency = 0
+        q.TextYAlignment = Enum.TextYAlignment.Bottom
+        q.Text = "Van"
+        q.ZIndex = 10
+    end
+end
+
+for G, x in pairs(workspace.House:GetChildren()) do
+    if x.Name == "FuseBox" then
+        local p = Instance.new("BillboardGui")
+        local q = Instance.new("TextLabel")
+        p.Adornee = x
+        p.Name = "FuseBox"
+        p.Parent = x
+        p.Size = UDim2.new(0, 100, 0, 150)
+        p.StudsOffset = Vector3.new(0, 1, 0)
+        p.AlwaysOnTop = true
+        q.Parent = p
+        q.BackgroundTransparency = 1
+        q.Position = UDim2.new(0, 0, 0, -50)
+        q.Size = UDim2.new(0, 100, 0, 100)
+        q.Font = Enum.Font.SourceSansSemibold
+        q.TextSize = 14
+        q.TextColor3 = Color3.fromRGB(192, 192, 192)
+        q.TextStrokeTransparency = 0
+        q.TextYAlignment = Enum.TextYAlignment.Bottom
+        q.Text = "FuseBox"
+        q.ZIndex = 10
+    end
+end
+
+-- Here
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local COREGUI = game:GetService("CoreGui")
+local LocalPlayer = Players.LocalPlayer
+
+-- Variabel
+local ESPenabled = true  -- Set to true to enable ESP by default
+local espTransparency = 0.4  -- Adjust transparency as needed
+local friends = {}
+
+-- Fetch friends list
+local function updateFriendsList()
+    friends = {}
+    local success, result = pcall(function()
+        return Players:GetFriendsAsync(LocalPlayer.UserId)
+    end)
+    if success then
+        for _, friend in pairs(result:GetCurrentPage()) do
+            friends[friend.Username] = true
+        end
+        print("Friends list updated:", friends)
+    else
+        warn("Failed to fetch friends list:", result)
+    end
+end
+
+-- Initial fetch of the friends list
+updateFriendsList()
+
+-- Utility Functions
+function round(num, numDecimalPlaces)
+    local mult = 10^(numDecimalPlaces or 0)
+    return math.floor(num * mult + 0.5) / mult
+end
+
+function getRoot(char)
+    return char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Torso") or char:FindFirstChild("UpperTorso")
+end
+
+function isFriend(plr)
+    return friends[plr.Name] or false
+end
+
+function ESP(plr)
+    task.spawn(function()
+        for i, v in pairs(COREGUI:GetChildren()) do
+            if v.Name == plr.Name .. '_ESP' then
+                v:Destroy()
+            end
+        end
+        wait()
+        if plr.Character and plr.Name ~= Players.LocalPlayer.Name and not COREGUI:FindFirstChild(plr.Name .. '_ESP') then
+            local ESPholder = Instance.new("Folder")
+            ESPholder.Name = plr.Name .. '_ESP'
+            ESPholder.Parent = COREGUI
+            repeat wait(1) until plr.Character and getRoot(plr.Character) and plr.Character:FindFirstChildOfClass("Humanoid")
+            if plr.Character and plr.Character:FindFirstChild('Head') then
+                local BillboardGui = Instance.new("BillboardGui")
+                BillboardGui.Adornee = plr.Character.Head
+                BillboardGui.Name = plr.Name
+                BillboardGui.Parent = ESPholder
+                BillboardGui.Size = UDim2.new(0, 150, 0, 50)
+                BillboardGui.StudsOffset = Vector3.new(0, 1.5, 0)
+                BillboardGui.AlwaysOnTop = true
+
+                local TextLabel1 = Instance.new("TextLabel")
+                TextLabel1.Parent = BillboardGui
+                TextLabel1.BackgroundTransparency = 1
+                TextLabel1.Position = UDim2.new(0, 0, 0, 0)
+                TextLabel1.Size = UDim2.new(0, 150, 0, 25)
+                TextLabel1.Font = Enum.Font.GothamBold
+                TextLabel1.TextSize = 18
+                TextLabel1.TextColor3 = isFriend(plr) and Color3.fromRGB(0, 162, 255) or Color3.new(1, 1, 1)  -- Blue for friends, white for others
+                TextLabel1.TextStrokeTransparency = 0.5
+                TextLabel1.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)  -- Black outline
+                TextLabel1.TextYAlignment = Enum.TextYAlignment.Top
+                TextLabel1.Text = plr.DisplayName .. " (" .. plr.Name .. ")"
+
+                local TextLabel2 = Instance.new("TextLabel")
+                TextLabel2.Parent = BillboardGui
+                TextLabel2.BackgroundTransparency = 1
+                TextLabel2.Position = UDim2.new(0, 0, 0, 20)  -- Close the distance between the name and studs
+                TextLabel2.Size = UDim2.new(0, 150, 0, 25)
+                TextLabel2.Font = Enum.Font.GothamBold
+                TextLabel2.TextSize = 16
+                TextLabel2.TextColor3 = Color3.new(1, 1, 1)
+                TextLabel2.TextStrokeTransparency = 0.5
+                TextLabel2.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)  -- Black outline
+                TextLabel2.TextYAlignment = Enum.TextYAlignment.Top
+
+                local espLoopFunc
+                local teamChange
+                local addedFunc
+                addedFunc = plr.CharacterAdded:Connect(function()
+                    if ESPenabled then
+                        espLoopFunc:Disconnect()
+                        teamChange:Disconnect()
+                        ESPholder:Destroy()
+                        repeat wait(1) until getRoot(plr.Character) and plr.Character:FindFirstChildOfClass("Humanoid")
+                        ESP(plr)
+                        addedFunc:Disconnect()
+                    else
+                        teamChange:Disconnect()
+                        addedFunc:Disconnect()
+                    end
+                end)
+                teamChange = plr:GetPropertyChangedSignal("TeamColor"):Connect(function()
+                    if ESPenabled then
+                        espLoopFunc:Disconnect()
+                        addedFunc:Disconnect()
+                        ESPholder:Destroy()
+                        repeat wait(1) until getRoot(plr.Character) and plr.Character:FindFirstChildOfClass("Humanoid")
+                        ESP(plr)
+                        teamChange:Disconnect()
+                    else
+                        teamChange:Disconnect()
+                    end
+                end)
+                local function espLoop()
+                    if COREGUI:FindFirstChild(plr.Name .. '_ESP') then
+                        if plr.Character and getRoot(plr.Character) and plr.Character:FindFirstChildOfClass("Humanoid") and Players.LocalPlayer.Character and getRoot(Players.LocalPlayer.Character) and Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
+                            local pos = math.floor((getRoot(Players.LocalPlayer.Character).Position - getRoot(plr.Character).Position).magnitude)
+                            TextLabel2.Text = pos .. " studs"  -- Show only the studs distance
+                        end
+                    else
+                        teamChange:Disconnect()
+                        addedFunc:Disconnect()
+                        espLoopFunc:Disconnect()
+                    end
+                end
+                espLoopFunc = RunService.RenderStepped:Connect(espLoop)
+            end
+        end
+    end)
+end
+
+-- Continuously check for new players and update ESP
+RunService.RenderStepped:Connect(function()
+    if ESPenabled then
+        for _, plr in pairs(Players:GetPlayers()) do
+            if not COREGUI:FindFirstChild(plr.Name .. '_ESP') and plr ~= LocalPlayer then
+                ESP(plr)
+            end
+        end
+    end
+end)
+
+-- Automatically apply ESP to new players if enabled
+Players.PlayerAdded:Connect(function(plr)
+    if ESPenabled then
+        ESP(plr)
+    end
+end)
+
+-- Remove ESP when a player leaves the game
+Players.PlayerRemoving:Connect(function(plr)
+    for i, v in pairs(COREGUI:GetChildren()) do
+        if v.Name == plr.Name .. '_ESP' then
+            v:Destroy()
+        end
+    end
+end)
+
+-- Enable ESP by default
+if ESPenabled then
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer then
+            ESP(plr)
+        end
+    end
+end
+
+
+game:GetService("ReplicatedStorage"):WaitForChild("Start"):FireServer()
+
+-- Function to fire a ProximityPrompt
+local function fireProximityPrompt(prompt)
+    prompt.MaxActivationDistance = 5 -- Set activation distance to a very large value
+    prompt:InputHoldBegin()
+    prompt:InputHoldEnd()
+end
+
+-- Create a ScreenGui to hold the button
+local gui = Instance.new("ScreenGui")
+gui.Parent = game.Players.LocalPlayer.PlayerGui -- Attach to player's GUI
+gui.ResetOnSpawn = false
+
+-- Create a TextButton for the script execution
+local button = Instance.new("TextButton")
+button.Text = "⚪"
+button.Size = UDim2.new(0, 80, 0, 80) -- Set size to 200x50
+button.Position = UDim2.new(1, -200, 0.5, -25) -- Position 220 pixels from the right, centered vertically
+button.AnchorPoint = Vector2.new(1, 0.5) -- Anchor to the middle-right
+button.Parent = gui
+
+-- Apply UICorner to make the button corners smooth
+local buttonCorner = Instance.new("UICorner")
+buttonCorner.CornerRadius = UDim.new(10, 10)  -- Adjust the corner radius to 5
+buttonCorner.Parent = button
+
+-- Adjust button properties
+button.BackgroundColor3 = Color3.fromRGB(255, 255, 255)  -- Set background color to white
+button.BackgroundTransparency = 0.8  -- Set transparency to 50% (0 = fully opaque, 1 = fully transparent)
+button.BorderSizePixel = 5  -- Set border size to 1 pixel
+button.BorderColor3 = Color3.new(1, 1, 1)  -- Set border color to white
+
+-- Function to handle button click
+button.MouseButton1Click:Connect(function()
+    -- Iterate through all descendants of workspace
+    for _, descendant in ipairs(workspace:GetDescendants()) do
+        if descendant:IsA("ProximityPrompt") then
+            -- Fire the ProximityPrompt immediately
+            fireProximityPrompt(descendant)
+        end
+    end
+    -- Optionally, provide feedback to the user
+    button.Text = "🔵"
+    wait(0.1)
+    button.Text = "⚪"
+end)
+
+-- Services
+local CoreGui = game:GetService("CoreGui")
+local Workspace = game:GetService("Workspace")
+local Players = game:GetService("Players")
+local Lighting = game:GetService("Lighting")
+local RunService = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local StarterGui = game:GetService("StarterGui")
+
+local LocalPlayer = Players.LocalPlayer
+local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
+
+-- Function to send notifications
+local function sendNotification(partName)
+    StarterGui:SetCore("SendNotification", {
+        Title = partName,
+        Text = "Detected",
+        Duration = 5
+    })
+end
+
+-- Function to handle PhantomDrain event
+local function handlePhantomDrain()
+    sendNotification("Phantom Drain")
+end
+
+-- Listen for PhantomDrain event
+ReplicatedStorage:WaitForChild("PhantomDrain").OnClientEvent:Connect(handlePhantomDrain)
+
+-- Existing code continues...
+
+-- Adding the specified billboard
+addBillboardGuiToPart("emfpart2", "Emf2", Color3.fromRGB(0, 69, 90))
+
+-- Existing billboard additions
+addBillboardGuiToPart("Orb", "Orb", Color3.fromRGB(30, 144, 255))
+addBillboardGuiToPart("emfpart5", "Emf5", Color3.fromRGB(255, 0, 0))
+addBillboardGuiToPart("emfpart3", "Emf3", Color3.fromRGB(100, 140, 0))
+addBillboardGuiToPart("emfpart4", "Emf4", Color3.fromRGB(100, 69, 0))
+
+-- Send notifications for existing parts (only emf5 and Orb)
+for _, part in ipairs({"Orb", "emfpart5"}) do
+    local detectedPart = Workspace:FindFirstChild(part)
+    if detectedPart then
+        sendNotification(part)
+    end
+end
+
+-- Detecting new parts added to the workspace
+Workspace.ChildAdded:Connect(function(child)
+    if child.Name == "Orb" or child.Name == "emfpart5" then
+        sendNotification(child.Name)
+    end
+end)
+
+-- Existing code continues...
+
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+
+-- Function to set Alone value
+local function setAloneValue()
+    while true do
+        if LocalPlayer:FindFirstChild("Data") and LocalPlayer.Data:FindFirstChild("Alone") then
+            LocalPlayer.Data.Alone.Value = true
+        else
+            -- If the Data or Alone value doesn't exist, you may need to create them first
+            -- Example:
+            -- local Data = Instance.new("Folder")
+            -- Data.Name = "Data"
+            -- Data.Parent = LocalPlayer
+            -- 
+            -- local Alone = Instance.new("BoolValue")
+            -- Alone.Name = "Alone"
+            -- Alone.Value = true
+            -- Alone.Parent = Data
+        end
+        wait(0.5)
+        print("Set Alone value to true")
+    end
+end
+
+-- Function to set CameraMaxZoomDistance
+local function setCameraMaxZoomDistance()
+    wait(2)  -- Pause for 2 seconds
+    LocalPlayer.CameraMaxZoomDistance = 999  -- Set to 0 for maximum zoom distance
+    print("Set CameraMaxZoomDistance to 999")
+end
+
+-- Function to set CameraMode to Classic
+local function setCameraMode()
+    wait(4)  -- Pause for 4 seconds
+    LocalPlayer.CameraMode = Enum.CameraMode.Classic
+    print("Set CameraMode to Classic")
+end
+
+-- Start the functions in separate threads
+spawn(function() setAloneValue() end)
+spawn(function() setCameraMaxZoomDistance() end)
+spawn(function() setCameraMode() end)
