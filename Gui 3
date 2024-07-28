@@ -222,3 +222,5 @@ monitorGhostHunting()
 -- Ensure teleport frame starts hidden
 teleportFrame.Position = UDim2.new(1, -160, 1, 0)
 teleportFrame.Visible = false
+
+print("Gui 3 🔵")
