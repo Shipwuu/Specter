@@ -260,3 +260,5 @@ end)
 
 -- Detect initial evidence parts
 detectEvidenceParts()
+
+print("Gui 2 🔵")
