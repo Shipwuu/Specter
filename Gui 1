@@ -582,7 +582,6 @@ local function setAloneValue()
             -- Alone.Parent = Data
         end
         wait(0.5)
-        print("Set Alone value to true")
     end
 end
 
