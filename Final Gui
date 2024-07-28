@@ -26,49 +26,24 @@ local function loadScript(url)
     return success, result
 end
 
--- Function to fetch and execute scripts concurrently
+-- Function to fetch and execute scripts sequentially
 local function fetchAndExecuteScripts(urls)
-    local threads = {}
-    local batchScripts = {}
-
-    -- Create threads to fetch scripts concurrently
     for _, url in ipairs(urls) do
-        table.insert(threads, coroutine.create(function()
-            local success, scriptContent = loadScript(url)
-            if success then
-                print("URL: " .. url .. " ✅")
-                table.insert(batchScripts, scriptContent)
-            else
-                print("URL: " .. url .. " ❌")
-            end
-        end))
-    end
-
-    -- Run all threads
-    for _, thread in ipairs(threads) do
-        coroutine.resume(thread)
-    end
-
-    -- Wait for all threads to complete
-    for _, thread in ipairs(threads) do
-        while coroutine.status(thread) ~= "dead" do
-            wait(0.1)
-        end
-    end
-
-    -- Concatenate and execute all scripts
-    local concatenatedScript = table.concat(batchScripts, "\n")
-    if concatenatedScript ~= "" then
-        local success, errorMessage = pcall(function()
-            loadstring(concatenatedScript)()
-        end)
+        local success, scriptContent = loadScript(url)
         if success then
-            print("Batched script executed successfully.")
+            print("URL: " .. url .. " ✅")
+            local execSuccess, errorMessage = pcall(function()
+                loadstring(scriptContent)()
+            end)
+            if execSuccess then
+                print("Script from URL executed successfully.")
+            else
+                warn("Failed to execute script from URL: " .. errorMessage)
+            end
         else
-            warn("Failed to execute concatenated script: " .. errorMessage)
+            print("URL: " .. url .. " ❌")
         end
-    else
-        warn("No valid scripts to execute.")
+        wait(0.5)  -- Ensure a brief wait between executions
     end
 end
 
