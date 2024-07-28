@@ -1,3 +1,4 @@
+
 -- Services
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -201,5 +202,3 @@ while true do
     setWalkSpeed(currentSpeed)
     wait(0.5)
 end
-
-print("Gui 3 🔵")
