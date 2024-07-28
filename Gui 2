@@ -318,3 +318,269 @@ teleportFrame.Visible = false
 
 
 -- end of Ghost Room ################
+
+-- @@@@@@@@@@@@@@@@
+
+-- Services
+local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+
+-- Variables
+local player = Players.LocalPlayer
+local screenGui = Instance.new("ScreenGui")
+local evidenceFrame = Instance.new("Frame")
+local evidenceListLayout = Instance.new("UIListLayout")
+local evidenceLabels = {}
+local detectedEvidences = {}
+
+-- Create the GUI elements
+screenGui.Name = "EvidenceChecklistGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+evidenceFrame.Size = UDim2.new(0, 150, 0, 200)
+evidenceFrame.Position = UDim2.new(0, 10, 1, -210)
+evidenceFrame.AnchorPoint = Vector2.new(0, 1)
+evidenceFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+evidenceFrame.BackgroundTransparency = 0.7
+evidenceFrame.BorderSizePixel = 2
+evidenceFrame.Visible = true
+evidenceFrame.Parent = screenGui
+
+evidenceListLayout.Padding = UDim.new(0, 5)
+evidenceListLayout.FillDirection = Enum.FillDirection.Vertical
+evidenceListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+evidenceListLayout.VerticalAlignment = Enum.VerticalAlignment.Top
+evidenceListLayout.Parent = evidenceFrame
+
+local evidenceLabel = Instance.new("TextLabel")
+evidenceLabel.Size = UDim2.new(1, 0, 0, 30)
+evidenceLabel.BackgroundTransparency = 1
+evidenceLabel.Font = Enum.Font.SourceSansBold
+evidenceLabel.TextSize = 18
+evidenceLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+evidenceLabel.Text = "Evidence"
+evidenceLabel.TextStrokeTransparency = 0.5
+evidenceLabel.TextXAlignment = Enum.TextXAlignment.Center
+evidenceLabel.TextYAlignment = Enum.TextYAlignment.Center
+evidenceLabel.Parent = evidenceFrame
+
+-- Function to add evidence to the checklist
+local function addEvidenceToChecklist(evidence)
+    if not detectedEvidences[evidence] then
+        detectedEvidences[evidence] = true
+        local label = Instance.new("TextLabel")
+        label.Size = UDim2.new(1, 0, 0, 30)
+        label.BackgroundTransparency = 1
+        label.Font = Enum.Font.SourceSans
+        label.TextSize = 18
+        label.TextColor3 = Color3.fromRGB(255, 255, 255)
+        label.Text = evidence .. " ✔"
+        label.TextStrokeTransparency = 0.5
+        label.TextXAlignment = Enum.TextXAlignment.Center
+        label.TextYAlignment = Enum.TextYAlignment.Center
+        label.Parent = evidenceFrame
+        table.insert(evidenceLabels, label)
+    end
+end
+
+-- Evidence detection functions
+local function detectEMF(EMF)
+    local s = false
+    if EMF and s == false then 
+        local L = {}
+        for I = 1, 5 do table.insert(L, 'L' .. tostring(I)) end
+        local t_s = {}
+        for I, V in pairs(L) do
+            L[I] = EMF:FindFirstChild(V)
+            if typeof(L[I]) == 'Instance' then
+                local c = L[I].BrickColor ~= BrickColor.new('Smoky grey')
+                if c and I == 5 then
+                    s = true
+                    break
+                end
+
+                if not c then 
+                    table.insert(t_s, L[I].BrickColor)
+                end
+            end
+        end
+        s = (s == true) or (#t_s <= 5 and t_s)
+    elseif not EMF and s == false then
+        local a = Workspace:FindFirstChild('emfpart5') or Workspace:WaitForChild('emfpart5')
+        if a then
+            s = true
+        end
+    end
+
+    if s then
+        addEvidenceToChecklist("EMF Level 5")
+    end
+
+    return s
+end
+
+local function detectSpiritBox(SB)
+    local s = false
+    if SB and s == false then
+        local child = SB:FindFirstChild('Hand') and SB.Hand:GetChildren()
+        for _, V in pairs(child) do
+            if V.ClassName == 'Sound' and V.Playing == true then
+                s = true
+                break
+            end
+        end
+    end
+
+    if s then
+        addEvidenceToChecklist("Spirit Box")
+    end
+
+    return s
+end
+
+local function detectWriting(Book)
+    local s = false
+    if Book and s == false then
+        local t = {}
+        for I = 1, 2 do table.insert(t, 'Page' .. tostring(I)) end
+        for I, V in pairs(t) do
+            t[I] = Book:FindFirstChild(V)
+            if typeof(t[I]) == 'Instance' then
+                local b = t[I]:FindFirstChildOfClass('Decal')
+                if b then
+                    b:GetPropertyChangedSignal("Transparency"):Connect(function()
+                        if b.Transparency == 0 then
+                            s = true
+                            addEvidenceToChecklist("Writing")
+                        end
+                    end)
+                    if b.Transparency == 0 then
+                        s = true
+                        addEvidenceToChecklist("Writing")
+                    end
+                end
+            end
+        end
+    end
+
+    if s then
+        addEvidenceToChecklist("Writing")
+    end
+
+    return s
+end
+
+local function detectFingerprints()
+    local s = false
+    local rooms = Workspace:FindFirstChild("House") and Workspace.House:FindFirstChild("Rooms")
+
+    if rooms then
+        for _, room in pairs(rooms:GetChildren()) do
+            local printPart = room:FindFirstChild("PrintPart")
+            if printPart and printPart:FindFirstChild("Print") then
+                local imageLabel = printPart.Print:FindFirstChild("ImageLabel")
+                if imageLabel and imageLabel.Visible then
+                    s = true
+                    break
+                end
+            end
+            
+            local windows = room:FindFirstChild("Windows")
+            if windows then
+                for _, window in pairs(windows:GetChildren()) do
+                    local printPart = window:FindFirstChild("PrintPart")
+                    if printPart and printPart:FindFirstChild("Print") then
+                        local imageLabel = printPart.Print:FindFirstChild("ImageLabel")
+                        if imageLabel and imageLabel.Visible then
+                            s = true
+                            break
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    if s then
+        addEvidenceToChecklist("Fingerprints")
+    end
+
+    return s
+end
+
+local function detectOrbs()
+    local s = false
+    if s == false then
+        local a = Workspace:FindFirstChild('Orb') or Workspace:WaitForChild('Orb')
+        if a then
+            s = true
+        end
+        wait(.5)
+    end
+
+    if s then
+        addEvidenceToChecklist("Orbs")
+    end
+
+    return s
+end
+
+local function detectFreezingTemps(TM)
+    local s = false
+    if TM and s == false then
+        local a = TM:FindFirstChild('Temp') and (TM.Temp:FindFirstChild('SurfaceGui') and TM.Temp.SurfaceGui.Frame.TextLabel.Text)
+        local b = tonumber(a:match('%d+'))
+        local c = (b <= 0)
+        if c then
+            s = true
+        end
+    elseif not TM and s == false then
+        -- Cold breath
+    end
+
+    if s then
+        addEvidenceToChecklist("Freezing Temps")
+    end
+
+    return s
+end
+
+-- Detecting evidence parts
+local function detectEvidenceParts()
+    local evidenceParts = {
+        ["emfpart5"] = detectEMF,
+        ["Book"] = detectWriting,
+        ["Spirit Box"] = detectSpiritBox,
+        ["Thermometer"] = detectFreezingTemps,
+        ["Orb"] = detectOrbs,
+        ["GhostRoom"] = detectFingerprints
+    }
+
+    for partName, detectFunc in pairs(evidenceParts) do
+        detectFunc(Workspace:FindFirstChild(partName))
+    end
+end
+
+-- Monitoring the appearance of evidence parts
+Workspace.ChildAdded:Connect(function(child)
+    local evidenceParts = {
+        ["emfpart5"] = detectEMF,
+        ["Book"] = detectWriting,
+        ["Spirit Box"] = detectSpiritBox,
+        ["Thermometer"] = detectFreezingTemps,
+        ["Orb"] = detectOrbs,
+        ["GhostRoom"] = detectFingerprints
+    }
+
+    if evidenceParts[child.Name] then
+        evidenceParts[child.Name](child)
+    end
+end)
+
+-- Detect initial evidence parts
+detectEvidenceParts()
+
+-- @@@@@@@@@@@@@@@@
+
+print("Gui 2") 
