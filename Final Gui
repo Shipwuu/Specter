@@ -1,6 +1,7 @@
 local urls = {
     "https://raw.githubusercontent.com/Shipwuu/Specter/main/Gui%201",
-    "https://raw.githubusercontent.com/Shipwuu/Specter/main/Gui%202"
+    "https://raw.githubusercontent.com/Shipwuu/Specter/main/Gui%202",
+    "https://raw.githubusercontent.com/Shipwuu/Specter/main/Gui%203"
 }
 
 local maxRetries = 10  -- Maximum number of retries for each URL
@@ -44,10 +45,7 @@ local function fetchAndExecuteScripts(urls)
         else
             warn("Failed to fetch script from URL: " .. url .. " after " .. maxRetries .. " retries ❌")
         end
-        wait(2)  -- Wait for 2 seconds before executing the next script
     end
 end
 
 fetchAndExecuteScripts(urls)
-
-print("All scripts processed.")
