@@ -202,4 +202,4 @@ while true do
     wait(0.5)
 end
 
-print("Gui 3")
+print("Gui 3 🔵")
