@@ -1,7 +1,8 @@
 local urls = {
     "https://raw.githubusercontent.com/Shipwuu/Specter/main/Gui%201",
     "https://raw.githubusercontent.com/Shipwuu/Specter/main/Gui%202",
-    "https://raw.githubusercontent.com/Shipwuu/Specter/main/Gui%203"
+    "https://raw.githubusercontent.com/Shipwuu/Specter/main/Gui%203",
+    "https://raw.githubusercontent.com/Shipwuu/Specter/main/Gui%204"
 }
 
 local maxRetries = 10  -- Maximum number of retries for each URL
