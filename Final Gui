@@ -29,22 +29,25 @@ end
 -- Function to fetch and execute scripts sequentially
 local function fetchAndExecuteScripts(urls)
     for _, url in ipairs(urls) do
+        print("Fetching script from URL: " .. url)
         local success, scriptContent = loadScript(url)
         if success then
-            print("URL: " .. url .. " ✅")
+            print("Successfully fetched script from URL: " .. url .. " ✅")
             local execSuccess, errorMessage = pcall(function()
                 loadstring(scriptContent)()
             end)
             if execSuccess then
-                print("Script from URL executed successfully.")
+                print("Successfully executed script from URL: " .. url)
             else
-                warn("Failed to execute script from URL: " .. errorMessage)
+                warn("Failed to execute script from URL: " .. url .. " with error: " .. errorMessage)
             end
         else
-            print("URL: " .. url .. " ❌")
+            warn("Failed to fetch script from URL: " .. url .. " after " .. maxRetries .. " retries ❌")
         end
         wait(0.5)  -- Ensure a brief wait between executions
     end
 end
 
 fetchAndExecuteScripts(urls)
+
+print("All scripts processed.")
