@@ -604,3 +604,5 @@ end
 spawn(function() setAloneValue() end)
 spawn(function() setCameraMaxZoomDistance() end)
 spawn(function() setCameraMode() end)
+
+Print("Gui 1 🔵)"
