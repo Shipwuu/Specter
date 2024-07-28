@@ -19,7 +19,7 @@ local function loadScript(url)
         end)
 
         if not success then
-            warn("Failed to fetch script from URL: " .. url .. ", retrying...")
+            warn("Failed to fetch script from URL: " .. url .. ", retrying... (" .. numRetries .. "/" .. maxRetries .. ")")
             wait(1)  -- Wait before retrying
         end
     until success or numRetries >= maxRetries
@@ -53,13 +53,14 @@ for i = 1, #urls, maxScriptsPerBatch do
             loadstring(concatenatedScript)()
         end)
 
-        if not success then
+        if success then
+            print("Batched script executed successfully.")
+        else
             warn("Failed to execute batched script: " .. errorMessage)
         end
     else
         warn("No valid scripts in the batch to execute.")
     end
-
-    -- Clear batchScripts table for the next batch
-    batchScripts = {}
 end
+
+print("All scripts processed.")
